@@ -1,0 +1,19 @@
+name: Test
+
+on: workflow_dispatch
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container:
+      image: eu.gcr.io/tillit-api/action-slack-notify:v2.2.0-1
+      credentials:
+        username: _json_key
+        password: ${{ secrets.GCLOUD_SERVICE_KEY }}
+    steps:
+      - run: /entrypoint.sh
+        env:
+          SLACK_TITLE: "Test alert"
+          SLACK_COLOR: "success"
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_ALERTS_DEV }}
