@@ -2,9 +2,13 @@ name: Deploy
 
 on: push
 
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     steps:
@@ -20,7 +24,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: eu.gcr.io/tillit-api/actions-slack-notify
+          images: eu.gcr.io/tillit-api/action-slack-notify
           tags: |
             type=raw,value={{tag}}
           flavor: |
@@ -49,3 +53,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           context: .
+          push: true
